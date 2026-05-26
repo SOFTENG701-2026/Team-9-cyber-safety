@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Brand-aware defaults — dark text reads on the site's cream/white surfaces.
+     Components that sit on dark teal (Navbar, Footer, hero banners) must opt
+     into text-white explicitly. */
+  --text: #1f2937;           /* slate-800 — body copy */
+  --text-h: #14351c;          /* dark forest — headings, harmonises with #3B6D11 */
+  --bg: #F7F5EE;              /* page cream — matches existing usage */
+  --border: #e5e4e7;
+  --code-bg: #f4f3ec;
+  --accent: #3B6D11;          /* brand green */
+  --accent-bg: rgba(59, 109, 17, 0.1);
+  --accent-border: rgba(59, 109, 17, 0.5);
+  --social-bg: rgba(244, 243, 236, 0.5);
+  --shadow:
+    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  /* Fluid base font-size: scales between 14px and 18px depending on viewport */
+  --base-font-size: clamp(14px, 0.9rem + 0.6vw, 18px);
+  font-size: var(--base-font-size);
+  line-height: 1;
+  letter-spacing: 0.018rem;
+  color-scheme: light;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  text-align: center;
+  border-inline: 1px solid var(--border);
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+h1,
+h2, 
+h3 {
+  font-family: 'Holtwood One SC', var(--heading);
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+h1 {
+  font-size: 3rem;
+  letter-spacing: -0.105rem;
+  margin: clamp(0.9rem, 0.7rem + 0.6vw, 2rem) 0;
+}
+h2 {
+  font-size: 2rem;
+  letter-spacing: -0.015rem;
+  margin: 0 0 0.5rem;
+}
+h3 {
+  font-size: 1.5rem ;
+  letter-spacing: -0.015rem;
+  margin: 0 0 0.5rem;
+}
+p {
+  font-size: clamp(0.875rem, 0.9rem + 0.2vw, 1.125rem);
+  color: var(--text);
+}
+
+code,
+.counter {
+  font-family: var(--mono);
+  display: inline-flex;
+  border-radius: 4px;
+  color: var(--text-h);
+}
+
+code {
+  font-size: clamp(.82rem, .9rem - 0.1vw, .95rem);
+  line-height: 1.35;
+  padding: 4px 8px;
+  background: var(--code-bg);
+}
