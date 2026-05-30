@@ -62,7 +62,6 @@ const AILearning = () => {
   useEffect(() => {
     if (initializedRef.current) return
     initializedRef.current = true
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadNewQuestion()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

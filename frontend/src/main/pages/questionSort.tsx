@@ -16,6 +16,13 @@ interface SortableItem {
   explanation: string;
 }
 
+interface ConfettiPiece {
+  id: number;
+  left: number;
+  delay: number;
+  hue: number;
+}
+
 type QuestionSortProps = {
   embedded?: boolean;
   onSubmit?: () => void;
@@ -76,6 +83,7 @@ const scenarios: SortableItem[] = [
 const QuestionSort = ({ embedded = false, onSubmit, onComplete }: QuestionSortProps) => {
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [confettiPieces, setConfettiPieces] = useState<ConfettiPiece[]>([]);
   const [musicPlaying, setMusicPlaying] = useState(false);
   const [isManuallyMuted, setIsManuallyMuted] = useState(false);
   const [debugInfo, setDebugInfo] = useState<string>("🎵 Click Play Music");
@@ -89,6 +97,7 @@ const QuestionSort = ({ embedded = false, onSubmit, onComplete }: QuestionSortPr
   });
   
   const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
+  const confettiTimeoutRef = useRef<number | null>(null);
 
   const middleItems = items.filter(i => i.target === 'middle');
   const leftItems = items.filter(i => i.target === 'safe');
@@ -98,15 +107,13 @@ const QuestionSort = ({ embedded = false, onSubmit, onComplete }: QuestionSortPr
   const correctCount = items.filter(item => item.target === item.answer).length;
   const allCorrect = correctCount === totalCount;
 
-  useEffect(() => {
-    if (allCorrect && hasSubmitted) {
-      setShowConfetti(true);
-      setDebugInfo("🎉 Perfect score! 🎉");
-      setTimeout(() => {
-        setShowConfetti(false);
-      }, 3000);
-    }
-  }, [allCorrect, hasSubmitted]);
+  const createConfettiPieces = (count: number) =>
+    Array.from({ length: count }, (_, index) => ({
+      id: index,
+      left: Math.random() * 100,
+      delay: Math.random() * 2,
+      hue: Math.random() * 360,
+    }));
 
   // Initialize audio
   useEffect(() => {
@@ -176,12 +183,30 @@ const QuestionSort = ({ embedded = false, onSubmit, onComplete }: QuestionSortPr
   const handleSubmit = () => {
     stopMusic();
     setHasSubmitted(true);
+    if (allCorrect) {
+      if (confettiTimeoutRef.current !== null) {
+        window.clearTimeout(confettiTimeoutRef.current);
+      }
+      setConfettiPieces(createConfettiPieces(50));
+      setShowConfetti(true);
+      setDebugInfo("🎉 Perfect score! 🎉");
+      confettiTimeoutRef.current = window.setTimeout(() => {
+        setShowConfetti(false);
+        setConfettiPieces([]);
+        confettiTimeoutRef.current = null;
+      }, 3000);
+    }
     onSubmit?.();
   };
 
   const resetGame = () => {
     setHasSubmitted(false);
     setShowConfetti(false);
+    setConfettiPieces([]);
+    if (confettiTimeoutRef.current !== null) {
+      window.clearTimeout(confettiTimeoutRef.current);
+      confettiTimeoutRef.current = null;
+    }
     
     const shuffled = [...scenarios];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -300,14 +325,14 @@ const QuestionSort = ({ embedded = false, onSubmit, onComplete }: QuestionSortPr
         {showConfetti && (
           <div className="fixed inset-0 pointer-events-none z-50">
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-              {[...Array(50)].map((_, i) => (
+              {confettiPieces.map((piece) => (
                 <div
-                  key={i}
+                  key={piece.id}
                   className="absolute animate-confetti"
                   style={{
-                    left: `${Math.random() * 100}%`,
-                    animationDelay: `${Math.random() * 2}s`,
-                    backgroundColor: `hsl(${Math.random() * 360}, 70%, 50%)`,
+                    left: `${piece.left}%`,
+                    animationDelay: `${piece.delay}s`,
+                    backgroundColor: `hsl(${piece.hue}, 70%, 50%)`,
                     width: '8px',
                     height: '8px',
                     top: '-10px',
