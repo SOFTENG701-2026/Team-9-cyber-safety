@@ -251,28 +251,19 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
         <ChoiceOverlay choices={scene.choices!} onPick={pickChoice} />
       ) : null}
 
-      {showQuestionSort ? (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm">
-          <div className="relative h-[min(92vh,980px)] w-[min(96vw,1600px)] overflow-hidden rounded-[32px] border border-white/40 bg-[#F7F5EE] shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
-            <button
-              type="button"
-              onClick={() => setShowQuestionSort(false)}
-              className="absolute right-4 top-4 z-50 rounded-full bg-white/90 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-white"
-              aria-label="Close question sort popup"
-            >
-              Close
-            </button>
-            <div className="h-full w-full overflow-auto">
-              <QuestionSort
-                embedded
-                onSubmit={() => {
-                  // Keep the popup open after submit so only the Close button dismisses it.
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      ) : null}
+{showQuestionSort ? (
+  <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm">
+    <div className="relative h-[min(92vh,980px)] w-[min(96vw,1600px)] overflow-hidden rounded-[32px] border border-white/40 bg-[#F7F5EE] shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+      <div className="h-full w-full overflow-auto">
+        <QuestionSort
+          embedded
+          onComplete={() => setShowQuestionSort(false)}
+          onSubmit={() => {}}
+        />
+      </div>
+    </div>
+  </div>
+) : null}
     </div>
   );
 }
