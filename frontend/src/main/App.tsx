@@ -8,7 +8,7 @@ import Footer from './components/Footer'
 import VisualNovelDemo from './pages/VisualNovel.tsx'
 import AILearning from './pages/AILearning'
 import QuizPage from './pages/quiz.tsx'
-import QuestionEmail from './pages/questionEmail.tsx'
+import QuestionEmail from './pages/questionEmail'
 
 function App() {
   const location = useLocation()

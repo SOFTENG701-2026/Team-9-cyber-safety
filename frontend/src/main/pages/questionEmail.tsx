@@ -2,11 +2,22 @@ import { useMemo, useState } from 'react';
 
 import emailQuestions from '../../resources/questions/email-questions.json';
 
+type ReportOption = {
+	question: string;
+	correct: boolean;
+	reason: string;
+};
+
+type EmailQuestionMeta = {
+	options: ReportOption[];
+};
+
 type EmailQuestion = {
 	subject: string;
 	sender: string;
 	recipient: string;
 	body: string;
+	question?: EmailQuestionMeta;
 };
 
 type EmailQuestionItem = EmailQuestion & {
@@ -21,65 +32,182 @@ const emails = Object.entries(emailQuestions as Record<string, EmailQuestion>)
 	}));
 
 const QuestionEmail = () => {
-	
 	const [selectedEmailId, setSelectedEmailId] = useState(emails[0]?.id ?? '');
+	const [reportOpen, setReportOpen] = useState(false);
+	const [selectedReportOptions, setSelectedReportOptions] = useState<string[]>([]);
+	const [reportSubmitted, setReportSubmitted] = useState(false);
+	const [correctEmailIds, setCorrectEmailIds] = useState<string[]>([]);
 
 	const selectedEmail = useMemo<EmailQuestionItem | undefined>(
 		() => emails.find((email) => email.id === selectedEmailId),
 		[selectedEmailId]
 	);
 
-	return(
+	const reportOptions = selectedEmail?.question?.options ?? [];
+	const hasIncorrectSelections = reportOptions.some(
+		(option) => selectedReportOptions.includes(option.question) !== option.correct
+	);
+	const isAllCorrect =
+		reportOptions.length > 0 &&
+		reportOptions.every((option) => selectedReportOptions.includes(option.question) === option.correct);
+	const isCurrentEmailCorrect = correctEmailIds.includes(selectedEmailId);
+
+	const handleSelectEmail = (emailId: string) => {
+		setSelectedEmailId(emailId);
+		setReportOpen(false);
+		setSelectedReportOptions([]);
+		setReportSubmitted(false);
+	};
+
+	const toggleReportOption = (optionQuestion: string) => {
+		setSelectedReportOptions((current) =>
+			current.includes(optionQuestion)
+				? current.filter((question) => question !== optionQuestion)
+				: [...current, optionQuestion]
+		);
+	};
+
+	const handleReportButtonClick = () => {
+		if (isAllCorrect) {
+			setCorrectEmailIds((current) =>
+				current.includes(selectedEmailId) ? current : [...current, selectedEmailId]
+			);
+			setSelectedReportOptions([]);
+			setReportSubmitted(false);
+			setReportOpen(false);
+			return;
+		}
+
+		setReportSubmitted(true);
+	};
+
+	const handleTryAgainClick = () => {
+		setSelectedReportOptions([]);
+		setReportSubmitted(false);
+		setReportOpen(true);
+	};
+
+	return (
 		<div className="text-left">
-			<div className="w-full max-w-5xl mx-auto h-64 rounded-xl p-6 text-slate-900 flex flex-col gap-4">{/*className="email-list" */}
 			<div className="w-full max-w-5xl mx-auto p-6">
-				<div className="flex w-full gap-6 ">
+				<div className="flex w-full gap-6">
 					<aside className="w-1/3 rounded-xl bg-[#E8F0E0] p-4">
 						<h2 className="mb-3 text-lg font-semibold text-slate-800">Inbox</h2>
 						<div className="flex flex-col gap-3">
-							{emails.map((email) => (
-								<button
-									key={email.id}
-									className="w-full text-left rounded-md bg-white/90 px-4 py-2 text-slate-900 hover:bg-white"
-									onClick={() => setSelectedEmailId(email.id)}
-								>
-									<p className="text-sm font-medium">{email.sender}</p>
-									<p className="text-xs text-slate-600">{email.subject}</p>
-								</button>
-							))}
+							{emails.map((email) => {
+								const isEmailSolved = correctEmailIds.includes(email.id);
+
+								return (
+									<button
+										key={email.id}
+										type="button"
+										className={`w-full rounded-md px-4 py-2 text-left text-slate-900 transition-colors ${isEmailSolved ? 'border border-green-300 bg-green-300 text-green-950 hover:bg-green-300' : 'bg-white/90 hover:bg-white'}`}
+										onClick={() => handleSelectEmail(email.id)}
+									>
+										<p className="text-sm font-medium">{email.sender}</p>
+										<p className="text-xs text-slate-600">{email.subject}</p>
+									</button>
+								);
+							})}
 						</div>
 					</aside>
 
-					<section className="flex-1 rounded-xl bg-white p-6">
-						<div className="mb-4">
-							{/* Subject as its own button */}
-							<button type="button" className="w-full text-left p-0 active:bg-emerald-100 focus:bg-emerald-100 focus:outline-none">
-								<h3 className="text-2xl font-bold text-slate-900">{selectedEmail?.subject}</h3>
+					<section
+						className={`relative flex-1 rounded-xl p-6 ${isCurrentEmailCorrect ? 'bg-green-300' : 'bg-white'}`}
+					>
+						<div className="absolute right-4 top-4 z-20">
+							<button
+								type="button"
+								disabled={isCurrentEmailCorrect}
+								onClick={() => setReportOpen((current) => !current)}
+								className="rounded-md bg-slate-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-500"
+							>
+								Report
 							</button>
 
+							{reportOpen && (
+								<div className="absolute left-full top-0 ml-2 w-80 rounded-xl border border-slate-200 bg-white p-4 text-left shadow-lg">
+									<p className="mb-3 text-sm font-semibold text-slate-900">Report options</p>
+									<div className="flex flex-col gap-3">
+										{reportOptions.length > 0 ? (
+											reportOptions.map((option) => {
+												const isSelected = selectedReportOptions.includes(option.question);
+												const isMatch = isSelected === option.correct;
+												const optionClassName = reportSubmitted
+													? isMatch
+														? 'border-green-300 bg-green-50'
+														: 'border-red-300 bg-red-50'
+													: 'border-transparent hover:bg-slate-50';
+
+												return (
+													<label
+														key={option.question}
+														className={`flex cursor-pointer items-start gap-3 rounded-md border px-2 py-2 text-sm text-slate-800 ${optionClassName}`}
+													>
+														<input
+															type="checkbox"
+															checked={isSelected}
+															onChange={() => toggleReportOption(option.question)}
+															className="mt-1 h-4 w-4 rounded border-slate-300 text-red-600 focus:ring-red-500"
+														/>
+														<div className="flex-1">
+															<span>{option.question}</span>
+															{reportSubmitted && !isMatch && (
+																<p className="mt-1 text-xs text-slate-700">{option.reason}</p>
+															)}
+														</div>
+													</label>
+												);
+											})
+										) : (
+											<p className="text-sm text-slate-500">No report options available for this email.</p>
+										)}
+									</div>
+									<div className="mt-4 flex justify-end border-t border-slate-200 pt-3">
+										{!reportSubmitted && (
+											<button
+												type="button"
+												disabled={isCurrentEmailCorrect}
+												onClick={handleReportButtonClick}
+												className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-emerald-400"
+											>
+												Submit
+											</button>
+										)}
+										{reportSubmitted && hasIncorrectSelections && (
+											<button
+												type="button"
+												onClick={handleTryAgainClick}
+												className="rounded-md bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-700 disabled:cursor-not-allowed disabled:bg-amber-400"
+											>
+												Try Again
+											</button>
+										)}
+										{reportSubmitted && isAllCorrect && (
+											<p className="text-sm font-semibold text-green-700">All options correct.</p>
+										)}
+									</div>
+								</div>
+							)}
+						</div>
+
+						<div className="mb-4">
+							<h1 className="text-2xl font-bold text-slate-900">{selectedEmail?.subject}</h1>
 							<div className="mt-0 flex items-start gap-4">
-								<div className="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white font-semibold text-lg">
+								<div className="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-emerald-600 text-lg font-semibold text-white">
 									{selectedEmail?.sender ? selectedEmail.sender.trim().charAt(0).toUpperCase() : ''}
 								</div>
-								<div className="flex flex-col w-full">
-									<button type="button" className="text-left rounded-md px-2 py-1 active:bg-emerald-100 focus:bg-emerald-100 focus:outline-none">
-										From: {selectedEmail?.sender}
-									</button>
-									<button type="button" className="text-left rounded-md px-2 py-1 active:bg-emerald-100 focus:bg-emerald-100 focus:outline-none">
-										To: {selectedEmail?.recipient}
-									</button>
+								<div className="flex w-full flex-col">
+									<p className="rounded-md px-2 py-1 text-left text-slate-800">From: {selectedEmail?.sender}</p>
+									<p className="rounded-md px-2 py-1 text-left text-slate-800">To: {selectedEmail?.recipient}</p>
 								</div>
 							</div>
 						</div>
 
-						{/* Body as its own button */}
-						<button type="button" className="w-full text-left whitespace-pre-line rounded-lg bg-white p-4 text-slate-800 active:bg-emerald-100 focus:bg-emerald-100 focus:outline-none">
-							{selectedEmail?.body}
-						</button>
+						<p className="w-full whitespace-pre-line rounded-lg p-4 text-left text-slate-800">{selectedEmail?.body}</p>
 					</section>
 				</div>
 			</div>
-		</div>
 		</div>
 	);
 };
