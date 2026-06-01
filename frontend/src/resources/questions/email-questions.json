@@ -3,23 +3,23 @@
 		"subject": "Free iPhone",
 		"sender": "appple-support-2704@gmail.com",
 		"recipient": "you@gmail.com",
-		"body":"Congratulations you've won a free iphone\n\nClick this link to reedem it Link: http://appple-com.us.to",
+		"body":"Congratulations you've won a free iPhone\n\nClick this link to redeem it: http://appple-com.us.to",
 		"question":{
 			"options":[
 				{
 					"question":"Suspicious Looking Email Name",
 					"correct":true,
-					"reason":"Email has a typo word 'appple' as well as suspicous username '-support-2704' and domain @gmail.com not @apple.com"
+					"reason":"Email has a typo in the word 'appple' as well as suspicious username '-support-2704' and domain @gmail.com not @apple.com"
 				},
 				{
 					"question":"Email pretending to be someone else",
 					"correct":true,
-					"reason":"Pretending to be apple support"
+					"reason":"Pretending to be Apple Support"
 				},
 				{
-					"question":"Time preasure",
+					"question":"Time pressure",
 					"correct":false,
-					"reason":"While the email asks for you to click the link it doesn't give you a time frame or uruge you quickly to do anything"
+					"reason":"While the email asks for you to click the link it doesn't give you a time frame or urge you quickly to do anything"
 				},
 				{
 					"question":"Suspicious Link",
@@ -33,23 +33,23 @@
 		"subject": "Free iPhone",
 		"sender": "support@apple.com",
 		"recipient": "you@gmail.com",
-		"body":"Congratulations you've won another a free iphone\n\nClick this link to reedem it Link: http://appple-com.us.to",
+		"body":"Congratulations you've won another free iPhone\n\nClick this link to redeem it: http://appple-com.us.to",
 		"question":{
 			"options":[
 				{
 					"question":"Suspicious Looking Email Name",
 					"correct":false,
-					"reason":"Email looks legitamate support@apple.com"
+					"reason":"Email looks legitimate support@apple.com"
 				},
 				{
 					"question":"Email pretending to be someone else",
 					"correct":false,
-					"reason":"Email looks legitamate support@apple.com"
+					"reason":"Email looks legitimate support@apple.com"
 				},
 				{
-					"question":"Time preasure",
+					"question":"Time pressure",
 					"correct":false,
-					"reason":"While the email asks for you to click the link it doesn't give you a time frame or uruge you quickly to do anything"
+					"reason":"While the email asks for you to click the link it doesn't give you a time frame or urge you quickly to do anything"
 				},
 				{
 					"question":"Suspicious Link",

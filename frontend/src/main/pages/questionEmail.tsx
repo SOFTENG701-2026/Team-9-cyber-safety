@@ -36,6 +36,7 @@ const QuestionEmail = () => {
 	const [reportOpen, setReportOpen] = useState(false);
 	const [selectedReportOptions, setSelectedReportOptions] = useState<string[]>([]);
 	const [reportSubmitted, setReportSubmitted] = useState(false);
+	const [reportLocked, setReportLocked] = useState(false);
 	const [correctEmailIds, setCorrectEmailIds] = useState<string[]>([]);
 
 	const selectedEmail = useMemo<EmailQuestionItem | undefined>(
@@ -57,9 +58,11 @@ const QuestionEmail = () => {
 		setReportOpen(false);
 		setSelectedReportOptions([]);
 		setReportSubmitted(false);
+		setReportLocked(false);
 	};
 
 	const toggleReportOption = (optionQuestion: string) => {
+		if (reportLocked) return;
 		setSelectedReportOptions((current) =>
 			current.includes(optionQuestion)
 				? current.filter((question) => question !== optionQuestion)
@@ -68,6 +71,7 @@ const QuestionEmail = () => {
 	};
 
 	const handleReportButtonClick = () => {
+		setReportLocked(true);
 		if (isAllCorrect) {
 			setCorrectEmailIds((current) =>
 				current.includes(selectedEmailId) ? current : [...current, selectedEmailId]
@@ -85,6 +89,7 @@ const QuestionEmail = () => {
 		setSelectedReportOptions([]);
 		setReportSubmitted(false);
 		setReportOpen(true);
+		setReportLocked(false);
 	};
 
 	return (
@@ -148,6 +153,7 @@ const QuestionEmail = () => {
 															type="checkbox"
 															checked={isSelected}
 															onChange={() => toggleReportOption(option.question)}
+															disabled={reportLocked}
 															className="mt-1 h-4 w-4 rounded border-slate-300 text-red-600 focus:ring-red-500"
 														/>
 														<div className="flex-1">
