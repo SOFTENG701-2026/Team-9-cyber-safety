@@ -2,6 +2,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import QuestionSort from "./questionSort.tsx";
+import ProfileSwipe from "./ProfileSwipe.tsx";
 
 /*
   Visual Novel Framework for Next.js / React
@@ -165,6 +166,7 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
   const [currentSceneId, setCurrentSceneId] = useState(story.startSceneId);
   const [choiceLocked, setChoiceLocked] = useState(false);
   const [showQuestionSort, setShowQuestionSort] = useState(false);
+  const [showProfileSwipe, setShowProfileSwipe] = useState(false);
 
   const scene = story.scenes[currentSceneId];
 
@@ -191,22 +193,33 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
   }
 
   const advance = () => {
-    if (hasChoices) {
-      setChoiceLocked(false);
-      return;
+  console.log("advance called, scene.id:", scene.id, "scene.nextSceneId:", scene.nextSceneId);
+
+  if (hasChoices) {
+    setChoiceLocked(false);
+    return;
+  }
+
+  if (scene.nextSceneId) {
+    const next = scene.nextSceneId;
+
+    // Trigger QuestionSort when leaving ctx2-popup-game
+    if (scene.id === "ctx2-popup-game") {
+      setShowQuestionSort(true);
     }
 
-    if (scene.nextSceneId) {
-      setCurrentSceneId(scene.nextSceneId);
-      if (scene.id === "ctx1-email-game" || scene.id === "ctx2-popup-game") {
-        setShowQuestionSort(true);
-        return;
-      }
-      return;
+    // Trigger ProfileSwipe when leaving ctx3-path-end
+    if (scene.id === "ctx3-path-end") {
+      setShowProfileSwipe(true);
+      return; // Don't advance the scene yet — ProfileSwipe onComplete will handle resuming
     }
 
-    onEnd?.();
-  };
+    setCurrentSceneId(next);
+    return;
+  }
+
+  onEnd?.();
+};
 
   const pickChoice = (nextSceneId: string) => {
     setChoiceLocked(true);
@@ -264,6 +277,23 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
     </div>
   </div>
 ) : null}
+
+{showProfileSwipe ? (
+  <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm">
+    <div className="relative h-[min(92vh,980px)] w-[min(96vw,900px)] overflow-hidden rounded-[32px] border border-white/40 bg-[#F7F5EE] shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+      <div className="h-full w-full overflow-auto">
+        <ProfileSwipe
+          embedded
+          onComplete={() => {
+            setShowProfileSwipe(false);
+            setCurrentSceneId("ctx4-learning");
+          }}
+        />
+      </div>
+    </div>
+  </div>
+) : null}
+
     </div>
   );
 }
@@ -668,7 +698,7 @@ const exampleStory: Story = {
       },
       speaker: "Āroha",
       speakerColor: "#E67AA5",
-      dialogue: "I almost trusted them, but they turned out to be a scammer! Thank you both for warning me before I shared my account details with them. They could have stolen my account and invaded my privacy.",
+      dialogue: "Wow, some of those profiles were really tricky to spot! It's scary how convincing some strangers online can be. I'm really glad I didn't share my account details with that new Minecraft friend.",
       nextSceneId: "ctx4-end",
     },
     "ctx4-end": {
@@ -688,8 +718,8 @@ const exampleStory: Story = {
       },
       speaker: "Kōro",
       speakerColor: "#5B8E3E",
-      dialogue: "No worries, Āroha. We should all be safe online and think twice before sharing information or clicking on suspicious links. It could have been really dangerous if a stranger had control over our private information.",
-      nextSceneId: "ctx4-end",
+      dialogue: "Yeah! Always think twice before trusting someone you only know online. If something feels off, like someone asking for your password or personal info, it's safer to say no and tell a trusted adult.",
+      nextSceneId: undefined,
     },
   },
 };
