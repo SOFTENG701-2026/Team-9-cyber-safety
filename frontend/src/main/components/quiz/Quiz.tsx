@@ -1,6 +1,5 @@
 import { Check, X } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 
 export type Question = {
   question: string;
@@ -9,7 +8,15 @@ export type Question = {
   reasoning?: string; // optional explanation for the answer
 };
 
-const QuizComponent = ({ questions }: { questions: Question[] }) => {
+type QuizComponentProps = {
+  questions: Question[];
+  onComplete?: () => void;
+};
+
+const QuizComponent = ({
+  questions,
+  onComplete,
+}: QuizComponentProps) => {
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [score, setScore] = useState(0);
@@ -42,6 +49,7 @@ const QuizComponent = ({ questions }: { questions: Question[] }) => {
     setSubmitted(false);
   }
 
+
   // Results view
   if (index >= questions.length) {
     return (
@@ -50,7 +58,7 @@ const QuizComponent = ({ questions }: { questions: Question[] }) => {
         <p className="mb-4">You scored {score} of {questions.length}.</p>
         <div className="flex flex-row gap-3">
           <button onClick={handleRestart} className="px-4 py-2 bg-[#EF9F27] hover:bg-[#D48C20] text-white rounded">Restart</button>
-          <Link to="/modules" className="px-4 py-2 bg-[#EF9F27] hover:bg-[#D48C20] text-white rounded">Leave Episode</Link>
+          <button onClick={() => onComplete?.()} className="px-4 py-2 bg-[#EF9F27] hover:bg-[#D48C20] text-white rounded">Continue</button>
         </div>
       </div>
     );
