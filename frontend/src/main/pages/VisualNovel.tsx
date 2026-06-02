@@ -2,6 +2,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import QuestionSort from "./questionSort.tsx";
+import QuestionEmail from "./questionEmail.tsx";
 
 /*
   Visual Novel Framework for Next.js / React
@@ -165,8 +166,9 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
   const [currentSceneId, setCurrentSceneId] = useState(story.startSceneId);
   const [choiceLocked, setChoiceLocked] = useState(false);
   const [showQuestionSort, setShowQuestionSort] = useState(false);
-  const activityTriggerSceneIds = new Set(["m1-16", "m2-10", "m3-19", "m3-41"]);
-
+  const [showQuestionEmail, setShowQuestionEmail] = useState(false);
+  const sortTriggerSceneIds = new Set(["m2-10", "m3-19", "m3-41"]);
+  const emailTriggerSceneIds = new Set(["m1-16"]);
   const scene = story.scenes[currentSceneId];
 
   const hasChoices = Boolean(scene?.choices?.length);
@@ -199,8 +201,11 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
 
     if (scene.nextSceneId) {
       setCurrentSceneId(scene.nextSceneId);
-      if (activityTriggerSceneIds.has(scene.id)) {
+      if (sortTriggerSceneIds.has(scene.id)) {
         setShowQuestionSort(true);
+        return;
+      } else if (emailTriggerSceneIds.has(scene.id)){
+        setShowQuestionEmail(true);
         return;
       }
       return;
@@ -260,6 +265,18 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
           embedded
           onComplete={() => setShowQuestionSort(false)}
           onSubmit={() => {}}
+        />
+      </div>
+    </div>
+  </div>
+) : null}
+{showQuestionEmail ? (
+  <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm">
+    <div className="relative h-[min(92vh,980px)] w-[min(96vw,1600px)] overflow-hidden rounded-[32px] border border-white/40 bg-[#F7F5EE] shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+      <div className="h-full w-full overflow-auto">
+        <QuestionEmail
+          embedded
+          onComplete={() => setShowQuestionEmail(false)}
         />
       </div>
     </div>
