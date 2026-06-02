@@ -479,22 +479,6 @@ const QuestionEmail = ({ embedded = false, onComplete }: QuestionEmailProps) => 
 								</div>
 							)}
 						</div>
-							<div className="mb-4 text-left">
-								<p className="mb-3 text-2xl font-medium text-slate-800">{selectedEmail?.subject}</p>
-								<div className="mt-0 flex items-start gap-4">
-									<div className="inline-flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-emerald-600 text-lg font-semibold text-white animate-float">
-										{selectedEmail?.sender ? selectedEmail.sender.trim().charAt(0).toUpperCase() : ''}
-									</div>
-									<div className="flex w-full flex-col">
-										<p className="rounded-md px-2 py-1 text-left text-slate-800">From: {selectedEmail?.sender}</p>
-										<p className="rounded-md px-2 py-1 text-left text-slate-800">To: {selectedEmail?.recipient}</p>
-									</div>
-								</div>
-							</div>
-
-							<div className={`w-full whitespace-pre-line rounded-lg p-4 text-left text-slate-800'}`}>
-								{selectedEmail?.body}
-							</div>
 					</section>
 				</div>
 
