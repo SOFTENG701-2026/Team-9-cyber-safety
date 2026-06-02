@@ -1,7 +1,7 @@
 "use client";
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { History } from "lucide-react";
+import { History, LogOut } from "lucide-react";
 import QuestionSort from "./questionSort.tsx";
 import QuestionEmail from "./questionEmail.tsx";
 import ProfileSwipe from "./ProfileSwipe.tsx";
@@ -296,6 +296,11 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
     onEnd?.();
   };
 
+  const goToScene = (sceneId: string) => {
+    historyBrowseModeRef.current = true;
+    setCurrentSceneId(sceneId);
+  };
+
   const pickChoice = (nextSceneId: string) => {
     setChoiceLocked(false);
     setTimeout(() => setCurrentSceneId(nextSceneId), 180);
@@ -322,7 +327,7 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
       {/* top UI area - optional pause/menu */}
       <Link to="/" className="absolute right-4 top-4 z-20 rounded-2xl bg-white/90 px-3 py-1 shadow-sm backdrop-blur-sm">
         <div className="flex items-center gap-1.5">
-          <h3>Exit</h3>
+          <LogOut  className="h-6 w-6 text-slate-800" strokeWidth={1.75} />
         </div>
       </Link>
 
@@ -365,9 +370,18 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
                           <div
                             key={id}
                             className={cn(
-                              "w-full max-w-[760px] rounded-[20px] border bg-white/90 p-3 shadow-[0_12px_30px_rgba(0,0,0,0.12)]",
+                              "w-full max-w-[760px] rounded-[20px] border bg-white/90 p-3 shadow-[0_12px_30px_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5 hover:bg-white",
                               currentSceneId === id ? "border-4 border-slate-500 ring-4 ring-slate-200" : "border-white/50"
                             )}
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => goToScene(id)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                goToScene(id);
+                              }
+                            }}
                           >
                             <div className="mb-2 flex items-start justify-between gap-2">
                               <div className="flex items-start gap-3">
@@ -379,19 +393,6 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
                                 </span>
                                 <p className="text-sm leading-snug text-slate-800 max-w-[640px]">{scene.dialogue}</p>
                               </div>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  historyBrowseModeRef.current = true;
-                                  setCurrentSceneId(id);
-                                }}
-                                className={cn(
-                                  "text-sm hover:text-slate-700",
-                                  currentSceneId === id ? "font-semibold text-black-700" : "text-slate-500"
-                                )}
-                              >
-                                Go
-                              </button>
                             </div>
                           </div>
                         );
