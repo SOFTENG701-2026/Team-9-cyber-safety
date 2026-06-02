@@ -1,6 +1,7 @@
 "use client";
-import { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { History, LogOut } from "lucide-react";
 import QuestionSort from "./questionSort.tsx";
 import QuestionEmail from "./questionEmail.tsx";
 import ProfileSwipe from "./ProfileSwipe.tsx";
@@ -97,31 +98,41 @@ function DialogueBox({
   dialogue,
   onAdvance,
   canAdvance,
+  className,
+  rightControls,
 }: {
   speaker: string;
   speakerColor: string;
   dialogue: string;
   onAdvance: () => void;
   canAdvance: boolean;
+  className?: string;
+  rightControls?: React.ReactNode;
 }) {
+
   return (
-    <button
-      type="button"
-      onClick={onAdvance}
-      disabled={!canAdvance}
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => canAdvance && onAdvance()}
       className={cn(
-        "group absolute bottom-[4.5rem] left-1/2 z-20 w-[min(92vw,1220px)] -translate-x-1/2 rounded-[28px] border border-white/60 bg-white/85 px-[3rem] py-[1.5rem] text-left shadow-[0_20px_50px_rgba(0,0,0,0.18)] backdrop-blur-sm outline-none transition",
-        canAdvance ? "hover:-translate-y-0.5 active:translate-y-0" : "cursor-default"
+        "relative group rounded-[28px] border border-white/60 bg-white/85 px-[3rem] py-[1.5rem] text-left shadow-[0_20px_50px_rgba(0,0,0,0.18)] backdrop-blur-sm outline-none transition",
+        canAdvance ? "hover:-translate-y-0.5 active:translate-y-0" : "cursor-default",
+        className
       )}
       aria-label="Advance dialogue"
+      aria-disabled={!canAdvance}
     >
-      <div className="mb-4 inline-flex items-center gap-2">
+      <div className="mb-4 flex items-center gap-2">
         <span
           className="rounded-xl px-[1rem] py-[0.5rem] text-[2rem] font-bold text-white shadow-sm"
           style={{ backgroundColor: speakerColor }}
         >
           {speaker}
         </span>
+        <div className="ml-auto">
+          {rightControls}
+        </div>
       </div>
       <p className="max-w-[72ch] text-[2.2rem] leading-[1.35] text-slate-800">
         {dialogue}
@@ -129,7 +140,7 @@ function DialogueBox({
       <div className="mt-3 text-right text-md font-medium text-slate-400 opacity-0 transition group-hover:opacity-100">
         Click to continue
       </div>
-    </button>
+    </div>
   );
 }
 
@@ -167,15 +178,20 @@ function ChoiceOverlay({
 export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayerProps) {
   const [currentSceneId, setCurrentSceneId] = useState(story.startSceneId);
   const [choiceLocked, setChoiceLocked] = useState(false);
+
+  const [recentNonActivitySceneIds, setRecentNonActivitySceneIds] = useState<string[]>([]);
+  const [showHistoryPanel, setShowHistoryPanel] = useState(false);
+  const historyBrowseModeRef = useRef(false);
+
   const [showQuestionSort, setShowQuestionSort] = useState(false);
   const [showQuestionEmail, setShowQuestionEmail] = useState(false);
   const [showQuestionSwipe, setShowQuestionSwipe] = useState(false);
   const [showQuestionQuiz, setShowQuestionQuiz] = useState(false);
-  const sortTriggerSceneIds = new Set(["m2-10"]);
-  const emailTriggerSceneIds = new Set(["m1-16"]);
-  const swipeTriggerSceneIds = new Set(["m3-19"]);
-  const quizTriggerSceneIds = new Set(["m3-41"]);
-  const endTriggerSceneIds = new Set(["m4-10"]);
+  const sortTriggerSceneIds = useMemo(() => new Set(["m2-10"]), []);
+  const emailTriggerSceneIds = useMemo(() => new Set(["m1-16"]), []);
+  const swipeTriggerSceneIds = useMemo(() => new Set(["m3-19"]), []);
+  const quizTriggerSceneIds = useMemo(() => new Set(["m3-41"]), []);
+  const endTriggerSceneIds = useMemo(() => new Set(["m4-10"]), []);
   const scene = story.scenes[currentSceneId];
 
   const hasChoices = Boolean(scene?.choices?.length);
@@ -192,6 +208,43 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
     };
   }, [scene]);
 
+  useEffect(() => {
+    if (!scene || showHistoryPanel) {
+      return;
+    }
+    const isActivity = sortTriggerSceneIds.has(scene.id) 
+      || emailTriggerSceneIds.has(scene.id)
+      || swipeTriggerSceneIds.has(scene.id)
+      || quizTriggerSceneIds.has(scene.id)
+      || endTriggerSceneIds.has(scene.id);
+
+    const isBranching = Boolean(scene.choices?.length);
+
+    if (isActivity || isBranching) {
+      const t = setTimeout(() => setRecentNonActivitySceneIds([]), 0);
+      return () => clearTimeout(t);
+    }
+    const historyHeadSceneId = recentNonActivitySceneIds[0];
+
+    if (historyBrowseModeRef.current) { 
+      if (historyHeadSceneId === scene.id) {
+        historyBrowseModeRef.current = false;
+      }
+      return;
+    }    
+    
+    const sceneId = scene.id;
+    const t = setTimeout(() => {
+      setRecentNonActivitySceneIds((prev) => {
+        const without = prev.filter((id) => id !== sceneId);
+        const next = [sceneId, ...without].slice(0, 5);
+        return next;
+      });
+    }, 0);
+
+    return () => clearTimeout(t);
+  }, [scene, recentNonActivitySceneIds, sortTriggerSceneIds, emailTriggerSceneIds, swipeTriggerSceneIds, quizTriggerSceneIds, endTriggerSceneIds, showHistoryPanel]);
+
   if (!scene || !currentCharacters) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
@@ -201,6 +254,10 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
   }
 
   const advance = () => {
+    if (showHistoryPanel && recentNonActivitySceneIds[0] === scene.id) {
+      setShowHistoryPanel(false);
+    }
+
     if (hasChoices) {
       setChoiceLocked(false);
       return;
@@ -226,7 +283,22 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
       return;
     }
 
+    if (!historyBrowseModeRef.current) {
+      setRecentNonActivitySceneIds((prev) => {
+        const without = prev.filter((id) => id !== scene.id);
+        const next = [scene.id, ...without].slice(0, 5);
+        return next;
+      });
+    } else {
+      historyBrowseModeRef.current = false;
+    }
+
     onEnd?.();
+  };
+
+  const goToScene = (sceneId: string) => {
+    historyBrowseModeRef.current = true;
+    setCurrentSceneId(sceneId);
   };
 
   const pickChoice = (nextSceneId: string) => {
@@ -255,17 +327,84 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
       {/* top UI area - optional pause/menu */}
       <Link to="/" className="absolute right-4 top-4 z-20 rounded-2xl bg-white/90 px-3 py-1 shadow-sm backdrop-blur-sm">
         <div className="flex items-center gap-1.5">
-          <h3>Exit</h3>
+          <LogOut  className="h-6 w-6 text-slate-800" strokeWidth={1.75} />
         </div>
       </Link>
 
-      <DialogueBox
-        speaker={scene.speaker}
-        speakerColor={scene.speakerColor}
-        dialogue={scene.dialogue}
-        onAdvance={advance}
-        canAdvance={!hasChoices}
-      />
+      {/* dialogue wrapper so we can position the dialog and place the history button inside it */}
+      <div className="absolute bottom-[4.5rem] left-1/2 z-20 -translate-x-1/2 w-[min(92vw,1220px)]">
+        <DialogueBox
+          speaker={scene.speaker}
+          speakerColor={scene.speakerColor}
+          dialogue={scene.dialogue}
+          onAdvance={advance}
+          canAdvance={!hasChoices}
+          className="w-full"
+          rightControls={
+            recentNonActivitySceneIds.length > 0 ? (
+              <div className="pointer-events-auto">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowHistoryPanel((s) => !s);
+                  }}
+                  className="inline-flex items-center justify-center rounded-full bg-white/90 p-2 shadow-md"
+                  aria-label="Open history"
+                >
+                  <History className="h-6 w-6 text-slate-800" strokeWidth={1.75} />
+                </button>
+
+                {showHistoryPanel ? (
+                  <div
+                    className="absolute left-0 right-0 flex items-end justify-center"
+                    style={{ bottom: "calc(100% + 0.5rem)" }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex flex-col items-end gap-3 w-full max-w-[920px] px-2">
+                      {/* Render from oldest (top) to newest (bottom) so newest appears closest to dialog */}
+                      {recentNonActivitySceneIds.slice().reverse().map((id) => {
+                        const scene = story.scenes[id];
+                        if (!scene) return null;
+                        return (
+                          <div
+                            key={id}
+                            className={cn(
+                              "w-full max-w-[760px] rounded-[20px] border bg-white/90 p-3 shadow-[0_12px_30px_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5 hover:bg-white",
+                              currentSceneId === id ? "border-4 border-slate-500 ring-4 ring-slate-200" : "border-white/50"
+                            )}
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => goToScene(id)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                goToScene(id);
+                              }
+                            }}
+                          >
+                            <div className="mb-2 flex items-start justify-between gap-2">
+                              <div className="flex items-start gap-3">
+                                <span
+                                  className="rounded-xl px-3 py-1 text-sm font-semibold text-white"
+                                  style={{ backgroundColor: scene.speakerColor }}
+                                >
+                                  {scene.speaker}
+                                </span>
+                                <p className="text-sm leading-snug text-slate-800 max-w-[640px]">{scene.dialogue}</p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            ) : null
+          }
+        />
+      </div>
 
       {isChoiceScene ? (
         <ChoiceOverlay choices={scene.choices!} onPick={pickChoice} />
