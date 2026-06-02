@@ -30,53 +30,56 @@ type QuestionSortProps = {
 };
 
 const scenarios: SortableItem[] = [
+  // SAFE POP-UPS (3 safe)
   { 
     id: 'item-1', 
     target: 'middle', 
     answer: 'safe', 
-    label: 'Email from your teacher asking you to bring PE gear tomorrow',
-    icon: '📧',
-    explanation: 'This is safe - it\'s from a known teacher you trust!'
+    label: 'Save your work? "You have unsaved changes. Do you want to save before closing?"',
+    icon: '💾',
+    explanation: 'Safe! Your computer is protecting your work from being lost.'
   },
   { 
     id: 'item-2', 
     target: 'middle', 
-    answer: 'unsafe', 
-    label: 'Text from unknown number with a link to win a free iPhone',
-    icon: '📱',
-    explanation: 'Unsafe! Unknown numbers with prize links are common scams.'
+    answer: 'safe', 
+    label: 'Software update: "A new update is available for your antivirus. Install now?"',
+    icon: '🔄',
+    explanation: 'Safe! Antivirus updates help protect your computer from new threats.'
   },
   { 
     id: 'item-3', 
     target: 'middle', 
-    answer: 'unsafe', 
-    label: 'A random person you don\'t know sends a friend request in a game',
-    icon: '🎮',
-    explanation: 'Unsafe - strangers online could be pretending to be someone else.'
+    answer: 'safe', 
+    label: 'Confirm delete: "Are you sure you want to move this file to the Recycle Bin?"',
+    icon: '🗑️',
+    explanation: 'Safe! This confirmation prevents accidental deletion of important files.'
   },
+  
+  // UNSAFE POP-UPS (3 unsafe)
   { 
     id: 'item-4', 
     target: 'middle', 
-    answer: 'safe', 
-    label: 'Your friend messaged you to hang out',
-    icon: '👋',
-    explanation: 'Safe! This is a real friend you know.'
+    answer: 'unsafe', 
+    label: 'Virus alert: "YOUR COMPUTER HAS BEEN INFECTED! Call this number NOW!"',
+    icon: '🚨',
+    explanation: 'Unsafe! Real antivirus never uses scary pop-ups with phone numbers.'
   },
   { 
     id: 'item-5', 
     target: 'middle', 
     answer: 'unsafe', 
-    label: 'A pop-up says "Your computer has a virus! Call this number now!"',
-    icon: '⚠️',
-    explanation: 'Scam alert! Real antivirus software never uses scary pop-ups.'
+    label: "CONGRATULATIONS! You won a free iPhone! Click here to claim!",
+    icon: '🎁',
+    explanation: 'Unsafe! Real contests never ask you to click pop-up links to claim prizes.'
   },
   { 
     id: 'item-6', 
     target: 'middle', 
-    answer: 'safe', 
-    label: 'Your parent helps you create a strong password for your account',
-    icon: '🔒',
-    explanation: 'Safe! Parents help keep your online accounts secure.'
+    answer: 'unsafe', 
+    label: "Your Microsoft subscription has expired. Call this number to pay.",
+    icon: '☎️',
+    explanation: 'Unsafe! Microsoft never uses pop-ups with phone numbers for tech support.'
   },
 ];
 
