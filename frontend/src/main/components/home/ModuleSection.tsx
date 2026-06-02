@@ -3,7 +3,7 @@ import ModuleCard from "./ModuleCard";
 
 const ModuleSection = () => {
   return (
-    <div className="flex flex-col items-center py-16 my-32">
+    <div className="flex flex-col items-center py-16 my-32 bob">
       <div className="mb-12">
         <h1 className="text-[#3B6D11]">
           Build your cyber

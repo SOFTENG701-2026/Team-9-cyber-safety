@@ -10,10 +10,10 @@ const Finish = () => {
         </h1>
         <img src="/celebration.png" alt="celebration" className="w-2/3 h-auto mt-[-50px]" />
       </div>
-      <div>
-        <h2 className="text-[#3B6D11] text-2xl text-center mb-4">
+      <div className="mb-12 flex flex-row items-center justify-center rounded-lg p-8 mt-12 mx-auto w-2/3 bob">
+        <h1 className="text-[#3B6D11] text-center mb-4">
           Ready for the next episode?
-        </h2>
+        </h1>
         <ModuleCardFull
           moduleNum={2}
 					title="Viruses & Malware" 
