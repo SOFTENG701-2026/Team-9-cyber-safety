@@ -393,8 +393,8 @@ const ProfileSwipe = ({ onComplete }: ProfileSwipeProps) => {
               className={`transition-all duration-300 ${
                 animating
                   ? lastChoice === "trustworthy"
-                    ? "opacity-0 translate-x-16"
-                    : "opacity-0 -translate-x-16"
+                    ? "opacity-0 -translate-x-16"
+                    : "opacity-0 translate-x-16"
                   : "opacity-100 translate-x-0"
               }`}
             >

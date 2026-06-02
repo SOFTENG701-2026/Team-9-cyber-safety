@@ -341,7 +341,7 @@ const QuestionEmail = ({ embedded = false, onComplete }: QuestionEmailProps) => 
 									<div className="flex-1">
 										<div className="flex items-baseline gap-2 flex-wrap">
 											<span className="font-semibold text-gray-900">{selectedEmail?.sender}</span>
-											<span className="text-gray-500 text-sm">&lt;{selectedEmail?.sender?.toLowerCase().replace(/\s/g, '')}@example.com&gt;</span>
+											<span className="text-gray-500 text-sm">&lt;{selectedEmail?.sender?.toLowerCase().replace(/\s/g, '')}&gt;</span>
 										</div>
 										<div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
 											<span>To: {selectedEmail?.recipient}</span>
