@@ -3,6 +3,8 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import QuestionSort from "./questionSort.tsx";
 import QuestionEmail from "./questionEmail.tsx";
+import ProfileSwipe from "./ProfileSwipe.tsx";
+import QuizPage from "./quiz.tsx";
 
 /*
   Visual Novel Framework for Next.js / React
@@ -167,8 +169,13 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
   const [choiceLocked, setChoiceLocked] = useState(false);
   const [showQuestionSort, setShowQuestionSort] = useState(false);
   const [showQuestionEmail, setShowQuestionEmail] = useState(false);
-  const sortTriggerSceneIds = new Set(["m2-10", "m3-19", "m3-41"]);
+  const [showQuestionSwipe, setShowQuestionSwipe] = useState(false);
+  const [showQuestionQuiz, setShowQuestionQuiz] = useState(false);
+  const sortTriggerSceneIds = new Set(["m2-10"]);
   const emailTriggerSceneIds = new Set(["m1-16"]);
+  const swipeTriggerSceneIds = new Set(["m3-19"]);
+  const quizTriggerSceneIds = new Set(["m3-41"]);
+  const endTriggerSceneIds = new Set(["m4-10"]);
   const scene = story.scenes[currentSceneId];
 
   const hasChoices = Boolean(scene?.choices?.length);
@@ -207,6 +214,14 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
       } else if (emailTriggerSceneIds.has(scene.id)){
         setShowQuestionEmail(true);
         return;
+      } else if (swipeTriggerSceneIds.has(scene.id)){
+        setShowQuestionSwipe(true);
+        return;
+      } else if (quizTriggerSceneIds.has(scene.id)){
+        setShowQuestionQuiz(true);
+        return;
+      } else if (endTriggerSceneIds.has(scene.id)) {
+        window.location.href = "/finish";
       }
       return;
     }
@@ -238,10 +253,9 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
       <CharacterSprite character={currentCharacters.right} dimmed={!currentCharacters.right.speaking} />
 
       {/* top UI area - optional pause/menu */}
-      <Link to="/" className="absolute right-4 top-4 z-20 rounded-2xl bg-white/90 px-3 py-2 shadow-sm backdrop-blur-sm">
+      <Link to="/" className="absolute right-4 top-4 z-20 rounded-2xl bg-white/90 px-3 py-1 shadow-sm backdrop-blur-sm">
         <div className="flex items-center gap-1.5">
-          <span className="h-7 w-1.5 rounded-full bg-slate-700" />
-          <span className="h-7 w-1.5 rounded-full bg-slate-700" />
+          <h3>Exit</h3>
         </div>
       </Link>
 
@@ -277,6 +291,29 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
         <QuestionEmail
           embedded
           onComplete={() => setShowQuestionEmail(false)}
+        />
+      </div>
+    </div>
+  </div>
+) : null}
+{showQuestionSwipe ? (
+  <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm">
+    <div className="relative h-[min(92vh,980px)] w-[min(96vw,1600px)] overflow-hidden rounded-[32px] border border-white/40 bg-[#F7F5EE] shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+      <div className="h-full w-full overflow-auto">
+        <ProfileSwipe
+          embedded
+          onComplete={() => setShowQuestionSwipe(false)}
+        />
+      </div>
+    </div>
+  </div>
+) : null}
+{showQuestionQuiz ? (
+  <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm">
+    <div className="relative h-[min(92vh,980px)] w-[min(96vw,1600px)] overflow-hidden rounded-[32px] border border-white/40 bg-[#F7F5EE] shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+      <div className="h-full w-full overflow-auto">
+        <QuizPage
+          onComplete={() => setShowQuestionQuiz(false)}
         />
       </div>
     </div>
@@ -2658,6 +2695,7 @@ const Story1: Story = {
       speaker: "Kōro",
       speakerColor: "#5B8E3E",
       dialogue: "That's such an easy way to remember!",
+      nextSceneId: "m4-10",
     },
   },
 };

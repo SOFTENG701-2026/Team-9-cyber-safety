@@ -26,11 +26,18 @@ const quizQuestions: Question[] = [
   }
 ];
 
-export default function QuizPage() {
+type QuizPageProps = {
+  onComplete?: () => void;
+};
+
+export default function QuizPage({ onComplete }: QuizPageProps) {
   return (
     <div className="flex flex-col items-center bg-[#F7F5EE] min-h-screen py-16">
       <h1 className="text-4xl font-bold text-center mb-8">Module 1 Quiz</h1>
-      <QuizComponent questions={quizQuestions} />
+      <QuizComponent
+        questions={quizQuestions}
+        onComplete={onComplete}
+      />
     </div>
   );
 }
