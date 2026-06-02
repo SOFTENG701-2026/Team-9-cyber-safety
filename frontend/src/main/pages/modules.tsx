@@ -20,7 +20,6 @@ const Modules = () => {
 					title="Viruses & Malware" 
 					description="Tāne and Āroha explore what happens if you get infected with a virus!"
 					imgUrl="/card.png"
-					linkUrl="/modules"
 				/> 
 
 				<ModuleCardFull 
@@ -28,7 +27,6 @@ const Modules = () => {
 					title="Online Privacy" 
 					description="Ruru and Āroha learn about online privacy and how to protect their personal information!"
 					imgUrl="/card.png"
-					linkUrl="/modules"
 				/> 
 
 				<ModuleCardFull 
@@ -36,7 +34,6 @@ const Modules = () => {
 					title="Cyberbullying" 
 					description="Someone is messaging Tāne mean messages! Can Kōro help?"
 					imgUrl="/card.png"
-					linkUrl="/modules"
 				/> 
       </div>
     </div>
