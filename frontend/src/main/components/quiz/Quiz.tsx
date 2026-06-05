@@ -149,7 +149,7 @@ const handleSelect = (selectedIndex: number) => {
     const newAttempts = currentState.attempts + 1;
     const isOutOfAttempts = newAttempts >= maxAttempts;
     
-    let newWrongAnswers = [...currentState.wrongAnswers];
+    const newWrongAnswers = [...currentState.wrongAnswers];
     if (!isCorrect && !currentState.wrongAnswers.includes(currentState.selectedAnswer)) {
       newWrongAnswers.push(currentState.selectedAnswer);
     }
@@ -276,7 +276,6 @@ const handleSelect = (selectedIndex: number) => {
     );
   }
 
-  const isAnswered = currentState.isCorrect || currentState.revealedCorrectAnswer;
   const isCorrect = currentState.isCorrect;
   const remainingAttempts = maxAttempts - currentState.attempts;
   const showWrongFeedback = currentState.showFeedback && currentState.lastAnswerWasWrong && !isCorrect && !currentState.revealedCorrectAnswer;
