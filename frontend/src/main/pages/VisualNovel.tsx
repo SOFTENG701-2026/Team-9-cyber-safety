@@ -33,6 +33,7 @@ type Choice = {
 type Scene = {
   id: string;
   background: string;
+  audioSrc?: string;
   left: CharacterSlot;
   right: CharacterSlot;
   speaker: string;
@@ -178,6 +179,7 @@ function ChoiceOverlay({
 export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayerProps) {
   const [currentSceneId, setCurrentSceneId] = useState(story.startSceneId);
   const [choiceLocked, setChoiceLocked] = useState(false);
+  const sceneAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const [recentNonActivitySceneIds, setRecentNonActivitySceneIds] = useState<string[]>([]);
   const [showHistoryPanel, setShowHistoryPanel] = useState(false);
@@ -205,6 +207,31 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
     return {
       left: { ...scene.left, speaking: leftIsSpeaker },
       right: { ...scene.right, speaking: rightIsSpeaker },
+    };
+  }, [scene]);
+
+  useEffect(() => {
+    if (!scene || !scene.audioSrc) {
+      return;
+    }
+
+    const sceneAudioSrc = scene.audioSrc
+    if (!sceneAudioRef.current) {
+      sceneAudioRef.current = new Audio(sceneAudioSrc);
+      sceneAudioRef.current.volume = 0.3;
+    }
+
+    const audio = sceneAudioRef.current;
+    if (audio.src !== new URL(sceneAudioSrc, window.location.origin).href) {
+      audio.src = sceneAudioSrc;
+    }
+    audio.pause();
+    audio.currentTime = 0;
+
+    audio.play().catch(() => {});
+
+    return () => {
+      audio.pause();
     };
   }, [scene]);
 
@@ -488,6 +515,7 @@ const Story1: Story = {
       speakerColor: "#5B8E3E",
       dialogue: "Hi everyone! I'm Kōro. Welcome to my room!",
       nextSceneId: "m1-02",
+      audioSrc: "/sounds/game-music.mp3"
     },
     "m1-02": {
       id: "m1-02",
