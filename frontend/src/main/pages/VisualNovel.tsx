@@ -6,6 +6,7 @@ import QuestionSort from "./questionSort.tsx";
 import QuestionEmail from "./questionEmail.tsx";
 import ProfileSwipe from "./ProfileSwipe.tsx";
 import QuizPage from "./quiz.tsx";
+import ProgressBar from "../components/progressbar.tsx";
 
 /*
   Visual Novel Framework for Next.js / React
@@ -187,6 +188,18 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
   const [showQuestionEmail, setShowQuestionEmail] = useState(false);
   const [showQuestionSwipe, setShowQuestionSwipe] = useState(false);
   const [showQuestionQuiz, setShowQuestionQuiz] = useState(false);
+
+  // Progress tracking
+  const [completedActivities, setCompletedActivities] = useState<string[]>([]);
+  const totalActivities = 3;
+
+  const completeActivity = (activityId: string) => {
+    if (!completedActivities.includes(activityId)) {
+      setCompletedActivities([...completedActivities, activityId]);
+    }
+  };
+
+  
   const sortTriggerSceneIds = useMemo(() => new Set(["m2-10"]), []);
   const emailTriggerSceneIds = useMemo(() => new Set(["m1-16"]), []);
   const swipeTriggerSceneIds = useMemo(() => new Set(["m3-19"]), []);
@@ -332,8 +345,13 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
       </Link>
 
       {/* dialogue wrapper so we can position the dialog and place the history button inside it */}
-      <div className="absolute bottom-[4.5rem] left-1/2 z-20 -translate-x-1/2 w-[min(92vw,1220px)]">
-        <DialogueBox
+<div className="fixed top-4 left-4 z-30">
+  <ProgressBar current={completedActivities.length} total={totalActivities} label="Activities" />
+</div>
+
+{/* dialogue wrapper */}
+<div className="absolute bottom-[4.5rem] left-1/2 z-20 -translate-x-1/2 w-[min(92vw,1220px)]">
+  <DialogueBox
           speaker={scene.speaker}
           speakerColor={scene.speakerColor}
           dialogue={scene.dialogue}
@@ -415,10 +433,13 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
     <div className="relative h-[min(92vh,980px)] w-[min(96vw,1600px)] overflow-hidden rounded-[32px] border border-white/40 bg-[#F7F5EE] shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
       <div className="h-full w-full overflow-auto">
         <QuestionSort
-          embedded
-          onComplete={() => setShowQuestionSort(false)}
-          onSubmit={() => {}}
-        />
+  embedded
+  onComplete={() => {
+    completeActivity("sort-game");
+    setShowQuestionSort(false);
+  }}
+  onSubmit={() => {}}
+/>
       </div>
     </div>
   </div>
@@ -428,9 +449,12 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
     <div className="relative h-[min(92vh,980px)] w-[min(96vw,1600px)] overflow-hidden rounded-[32px] border border-white/40 bg-[#F7F5EE] shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
       <div className="h-full w-full overflow-auto">
         <QuestionEmail
-          embedded
-          onComplete={() => setShowQuestionEmail(false)}
-        />
+  embedded
+  onComplete={() => {
+    completeActivity("email-game");
+    setShowQuestionEmail(false);
+  }}
+/>
       </div>
     </div>
   </div>
@@ -440,9 +464,12 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
     <div className="relative h-[min(92vh,980px)] w-[min(96vw,1600px)] overflow-hidden rounded-[32px] border border-white/40 bg-[#F7F5EE] shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
       <div className="h-full w-full overflow-auto">
         <ProfileSwipe
-          embedded
-          onComplete={() => setShowQuestionSwipe(false)}
-        />
+  embedded
+  onComplete={() => {
+    completeActivity("swipe-game");
+    setShowQuestionSwipe(false);
+  }}
+/>
       </div>
     </div>
   </div>
