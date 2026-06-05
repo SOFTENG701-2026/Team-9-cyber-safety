@@ -226,7 +226,7 @@ const handleSelect = (selectedIndex: number) => {
   // Results view
   if (quizCompleted) {
     return (
-      <div className="relative min-h-screen">
+      <div className="relative h-full">
         <div className="fixed inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-br from-[#E8F0E0] via-[#F7F5EE] to-[#FFF4E6]" />
         </div>
@@ -246,8 +246,8 @@ const handleSelect = (selectedIndex: number) => {
           {debugInfo}
         </div>
 
-        <div className="relative z-10 flex items-center justify-center min-h-screen p-6">
-          <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+        <div className="fixed inset-0 z-10 flex items-center justify-center p-6">
+          <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-8 max-h-[90vh]">
             <div className="text-6xl mb-4">🏆</div>
             <h2 className="text-2xl font-bold text-[#3B6D11] mb-2">Quiz Complete!</h2>
             <p className="text-gray-600 mb-4">You scored {score} out of {maxPossibleScore}</p>
@@ -307,7 +307,7 @@ const handleSelect = (selectedIndex: number) => {
         <p className="text-[#3B6D11] font-bold text-sm">⭐ Score: {score} / {maxPossibleScore}</p>
       </div>
 
-      <div className="relative z-10 flex items-center justify-center min-h-screen p-6">
+<div className="relative z-10 flex items-center justify-center h-full p-6">
         <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-8">
           {/* Progress */}
           <div className="mb-6 flex justify-between items-center">

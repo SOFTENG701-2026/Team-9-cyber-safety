@@ -191,7 +191,7 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
 
   // Progress tracking
   const [completedActivities, setCompletedActivities] = useState<string[]>([]);
-  const totalActivities = 3;
+  const totalActivities = 4;
 
   const completeActivity = (activityId: string) => {
     if (!completedActivities.includes(activityId)) {
