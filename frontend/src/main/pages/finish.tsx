@@ -18,7 +18,7 @@ const Finish = () => {
           moduleNum={2}
 					title="Viruses & Malware" 
 					description="Tāne and Āroha explore what happens if you get infected with a virus!"
-					imgUrl="/card.png"
+					imgUrl="/card2.png"
 				 />
       </div>
     </div>
