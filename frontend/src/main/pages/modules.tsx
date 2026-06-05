@@ -11,7 +11,7 @@ const Modules = () => {
 					moduleNum={1}
 					title="Scams and Phishing" 
 					description="Kōro, Ruru and Āroha learn how to identify and avoid scams and phishing attempts!"
-					imgUrl="/card.png"
+					imgUrl="/card-robber.png"
 					linkUrl="/vn"
 				/> 
 						
@@ -19,21 +19,21 @@ const Modules = () => {
 					moduleNum={2}
 					title="Viruses & Malware" 
 					description="Tāne and Āroha explore what happens if you get infected with a virus!"
-					imgUrl="/card2.png"
+					imgUrl="/card-skull.png"
 				/> 
 
 				<ModuleCardFull 
 					moduleNum={3}
 					title="Online Privacy" 
 					description="Ruru and Āroha learn about online privacy and how to protect their personal information!"
-					imgUrl="/card3.png"
+					imgUrl="/card-privacy.png"
 				/> 
 
 				<ModuleCardFull 
 					moduleNum={4}
 					title="Cyberbullying" 
 					description="Someone is messaging Tāne mean messages! Can Kōro help?"
-					imgUrl="/card4.png"
+					imgUrl="/card-troll.png"
 				/> 
       </div>
     </div>
