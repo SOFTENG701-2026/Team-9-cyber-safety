@@ -199,6 +199,40 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
     }
   };
 
+// Skip to next uncompleted activity
+const skipToNextActivity = () => {
+  // Close any open modals
+  setShowQuestionSort(false);
+  setShowQuestionEmail(false);
+  setShowQuestionSwipe(false);
+  setShowQuestionQuiz(false);
+  setShowHistoryPanel(false);
+  setChoiceLocked(false);
+  
+  // Check which activities are already completed
+  const isEmailCompleted = completedActivities.includes("email-game");
+  const isSortCompleted = completedActivities.includes("sort-game");
+  const isSwipeCompleted = completedActivities.includes("swipe-game");
+  const isQuizCompleted = completedActivities.includes("quiz");
+  
+  // Find the next uncompleted activity
+  if (!isEmailCompleted) {
+    // Jump to email activity (m1-16)
+    setCurrentSceneId("m1-16");
+  } else if (!isSortCompleted) {
+    // Jump to sort/pop-up activity (m2-10)
+    setCurrentSceneId("m2-10");
+  } else if (!isSwipeCompleted) {
+    // Jump to profile swipe activity (m3-19)
+    setCurrentSceneId("m3-19");
+  } else if (!isQuizCompleted) {
+    // Jump to quiz activity (m3-41)
+    setCurrentSceneId("m3-41");
+  } else {
+    // All activities completed, jump to end scene
+    setCurrentSceneId("m4-10");
+  }
+};
   
   const sortTriggerSceneIds = useMemo(() => new Set(["m2-10"]), []);
   const emailTriggerSceneIds = useMemo(() => new Set(["m1-16"]), []);
@@ -246,6 +280,8 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
       return;
     }    
     
+
+
     const sceneId = scene.id;
     const t = setTimeout(() => {
       setRecentNonActivitySceneIds((prev) => {
@@ -338,11 +374,22 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
       <CharacterSprite character={currentCharacters.right} dimmed={!currentCharacters.right.speaking} />
 
       {/* top UI area - optional pause/menu */}
-      <Link to="/" className="absolute right-4 top-4 z-20 rounded-2xl bg-white/90 px-3 py-1 shadow-sm backdrop-blur-sm">
-        <div className="flex items-center gap-1.5">
-          <LogOut  className="h-6 w-6 text-slate-800" strokeWidth={1.75} />
-        </div>
-      </Link>
+<div className="absolute right-4 top-4 z-20 flex gap-2">
+  {/* Skip Scene Button */}
+  <button
+    onClick={skipToNextActivity}
+    className="rounded-2xl bg-orange-500/90 hover:bg-orange-600 px-4 py-1 shadow-sm backdrop-blur-sm transition-all"
+    title="Skip to next activity"
+  >
+    <span className="text-white text-sm font-semibold">⏭ Skip Scene</span>
+  </button>
+  
+  <Link to="/" className="rounded-2xl bg-white/90 px-3 py-1 shadow-sm backdrop-blur-sm">
+    <div className="flex items-center gap-1.5">
+      <LogOut className="h-6 w-6 text-slate-800" strokeWidth={1.75} />
+    </div>
+  </Link>
+</div>
 
       {/* dialogue wrapper so we can position the dialog and place the history button inside it */}
 <div className="fixed top-4 left-4 z-30">
@@ -431,6 +478,16 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
 {showQuestionSort ? (
   <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm">
     <div className="relative h-[min(92vh,980px)] w-[min(96vw,1600px)] overflow-hidden rounded-[32px] border border-white/40 bg-[#F7F5EE] shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+      {/* Skip Activity Button - ADD THIS */}
+      <button
+        onClick={() => {
+          completeActivity("sort-game");
+          setShowQuestionSort(false);
+        }}
+        className="absolute top-10 right-4 z-50 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all shadow-lg"
+      >
+        ⏭️ Skip Activity
+      </button>
       <div className="h-full w-full overflow-auto">
         <QuestionSort
   embedded
@@ -447,6 +504,16 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
 {showQuestionEmail ? (
   <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm">
     <div className="relative h-[min(92vh,980px)] w-[min(96vw,1600px)] overflow-hidden rounded-[32px] border border-white/40 bg-[#F7F5EE] shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+      {/* Skip Activity Button - ADD THIS */}
+      <button
+        onClick={() => {
+          completeActivity("email-game");
+          setShowQuestionEmail(false);
+        }}
+        className="absolute top-10 right-4 z-50 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all shadow-lg"
+      >
+        ⏭️ Skip Activity
+      </button>
       <div className="h-full w-full overflow-auto">
         <QuestionEmail
   embedded
@@ -462,6 +529,16 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
 {showQuestionSwipe ? (
   <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm">
     <div className="relative h-[min(92vh,980px)] w-[min(96vw,1600px)] overflow-hidden rounded-[32px] border border-white/40 bg-[#F7F5EE] shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+      {/* Skip Activity Button - ADD THIS */}
+      <button
+        onClick={() => {
+          completeActivity("swipe-game");
+          setShowQuestionSwipe(false);
+        }}
+        className="absolute top-10 right-4 z-50 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all shadow-lg"
+      >
+        ⏭️ Skip Activity
+      </button>
       <div className="h-full w-full overflow-auto">
         <ProfileSwipe
   embedded
@@ -477,9 +554,22 @@ export function VisualNovelPlayer({ story, onEnd, className }: VisualNovelPlayer
 {showQuestionQuiz ? (
   <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm">
     <div className="relative h-[min(92vh,980px)] w-[min(96vw,1600px)] overflow-hidden rounded-[32px] border border-white/40 bg-[#F7F5EE] shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+      {/* Skip Activity Button */}
+      <button
+        onClick={() => {
+          completeActivity("quiz");  // Add this to track quiz completion
+          setShowQuestionQuiz(false);
+        }}
+        className="absolute top-10 right-4 z-50 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all shadow-lg"
+      >
+        ⏭️ Skip Activity
+      </button>
       <div className="h-full w-full overflow-auto">
         <QuizPage
-          onComplete={() => setShowQuestionQuiz(false)}
+          onComplete={() => {
+            completeActivity("quiz");  // Add this to track quiz completion
+            setShowQuestionQuiz(false);
+          }}
         />
       </div>
     </div>
